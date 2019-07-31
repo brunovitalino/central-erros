@@ -18,4 +18,12 @@ public class UsuarioResource {
 		Usuario usuario = new UsuarioDAO().busca(1l);
 		return Convert.fromObjectToXML(usuario);
 	}
+
+	@Path("/new")
+	@GET
+	@Produces(MediaType.APPLICATION_ATOM_XML)
+	public String adiciona() {
+		Usuario usuario = new UsuarioDAO().adiciona();
+		return Convert.fromObjectToXML(usuario);
+	}
 }

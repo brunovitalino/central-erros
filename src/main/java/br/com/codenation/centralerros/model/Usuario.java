@@ -2,13 +2,24 @@ package br.com.codenation.centralerros.model;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class Usuario {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	private String token;
 	private String nome;
 	private String email;
 	private String password;
 	private Timestamp dataCadastro;
+	
+	public Usuario() {}
 	
 	public Usuario(String token, String nome, String email, String password) {
 		this.token = token;
@@ -17,6 +28,7 @@ public class Usuario {
 		this.password = password;
 		this.dataCadastro = new Timestamp(System.currentTimeMillis());
 	}
+	
 	public Long getId() {
 		return id;
 	}
