@@ -9,14 +9,28 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 public class Servidor {
 	
-	@SuppressWarnings("deprecation")
+	private static HttpServer server;
+
 	public static void main(String[] args) throws IOException {
-		URI uri = URI.create("http://localhost:8080");
-		ResourceConfig config = new ResourceConfig().packages("br.com.codenation.centralerros.resource");
-		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(uri, config);
+		inicializaServidor();
 		System.out.println("Servidor rodando...");
 		System.in.read();
-		server.stop();
+		finalizaServidor();
+		System.out.println("Servidor parado.");
 	}
 
+	private static void getInstance() {
+		URI serverUri = URI.create("http://localhost:8080");
+		ResourceConfig config = new ResourceConfig().packages("br.com.codenation.centralerros.resource");
+		server = GrizzlyHttpServerFactory.createHttpServer(serverUri, config);
+	}
+	
+	public static void inicializaServidor() {
+		if (server == null)	getInstance();
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void finalizaServidor() {
+		if (server != null)	server.stop();
+	}
 }
