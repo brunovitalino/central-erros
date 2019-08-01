@@ -2,6 +2,7 @@ package br.com.codenation.centralerros.resource;
 
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -50,7 +51,7 @@ public class UsuarioResource {
 	public String save(String conteudo) {
 		Usuario usuario = (Usuario) ConvertUtil.fromXMLtoObject(conteudo);
 		new UsuarioDAO().save(usuario);
-		return "sucesso";
+		return "<status>Salvo com sucesso!</status>";
 	}
 
 	// Atualiza as informacoes de um usuario existente
@@ -59,6 +60,14 @@ public class UsuarioResource {
 	public String update(String conteudo) {
 		Usuario usuario = (Usuario) ConvertUtil.fromXMLtoObject(conteudo);
 		new UsuarioDAO().update(usuario);
-		return "sucesso";
+		return "<status>Atualizado com sucesso!</status>";
+	}
+	
+	@Path("{id}")
+	@DELETE
+	@Produces(MediaType.APPLICATION_XML)
+	public String remove(@PathParam("id") Long id) {
+		new UsuarioDAO().remove(id);
+		return "<status>Removido com sucesso!</status>";
 	}
 }

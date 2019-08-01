@@ -100,6 +100,18 @@ public class UsuarioDAO {
 		em.getTransaction().commit();
 		em.close();
 	}
+
+	public void remove(Long id) {
+		
+		EntityManager em = new JPAUtil().getEntityManager();
+		em.getTransaction().begin();
+		
+		Usuario usuario = em.find(Usuario.class, id);
+		em.remove(usuario);
+		
+		em.getTransaction().commit();
+		em.close();
+	}
 	
 	
 	// DAOs AUXILIARES
