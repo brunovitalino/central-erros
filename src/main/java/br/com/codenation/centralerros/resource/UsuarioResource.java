@@ -18,15 +18,6 @@ import br.com.codenation.centralerros.utils.ConvertUtil;
 @Path("usuario")
 public class UsuarioResource {
 
-	// Popula o banco
-	@Path("popula")
-	@GET
-	@Produces(MediaType.APPLICATION_XML)
-	public String adiciona() {
-		Usuario usuario = new UsuarioDAO().popula();
-		return ConvertUtil.fromObjectToXML(usuario);
-	}
-
 	// Busca usuario pelo id
 	@Path("{id}")
 	@GET

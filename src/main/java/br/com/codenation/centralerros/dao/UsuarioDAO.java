@@ -12,30 +12,9 @@ import br.com.codenation.centralerros.utils.JPAUtil;
 import br.com.codenation.centralerros.utils.TokenUtil;
 
 public class UsuarioDAO {
+
 	
 	// DAOs PRINCIPAIS
-	
-	public Usuario popula() {
-		Usuario usuario = new Usuario();
-		usuario.setToken("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma");
-		usuario.setNome("Administrador");
-		usuario.setEmail("admin@admin.com");
-		usuario.setPassword("123456");
-		Timestamp horaAtual = new Timestamp(System.currentTimeMillis());
-		usuario.setDataCadastro(horaAtual);
-		usuario.setDataAtualizacao(horaAtual);
-		
-		EntityManager em = new JPAUtil().getEntityManager();
-		em.getTransaction().begin();
-		
-		em.persist(usuario);
-		
-		em.getTransaction().commit();
-		em.close();
-//		new JPAUtil().closeEntityManager();
-		
-		return usuario;
-	}
 
 	public Usuario find(long id) {
 		
@@ -70,7 +49,7 @@ public class UsuarioDAO {
 	
 	public void save(Usuario usuario) {
 		
-		usuario.setToken(new TokenUtil().getNewToken());
+		if (usuario.getToken()==null) usuario.setToken(new TokenUtil().getNewToken());
 		Timestamp horaAtual = new Timestamp(System.currentTimeMillis());
 		usuario.setDataCadastro(horaAtual);
 		usuario.setDataAtualizacao(horaAtual);
