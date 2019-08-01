@@ -1,5 +1,7 @@
 package br.com.codenation.centralerros.resource;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -31,6 +33,15 @@ public class UsuarioResource {
 	public String find(@PathParam("id") Long id) {
 		Usuario usuario = new UsuarioDAO().find(id);
 		return ConvertUtil.fromObjectToXML(usuario);
+	}
+
+	// Busca todos usuarios
+	@Path("all")
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public String find() {
+		List<Usuario> usuarios = new UsuarioDAO().findAll();
+		return ConvertUtil.fromObjectToXML(usuarios);
 	}
 
 	// Salva um novo usuario

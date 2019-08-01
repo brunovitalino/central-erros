@@ -51,6 +51,23 @@ public class UsuarioDAO {
 		return usuario;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Usuario> findAll() {
+		
+		EntityManager em = new JPAUtil().getEntityManager();
+		em.getTransaction().begin();
+		
+		String jpql = "Select u from Usuario u";
+		
+		Query query = em.createQuery(jpql);
+		List<Usuario> usuarios = query.getResultList();
+		
+		em.getTransaction().commit();
+		em.close();
+		
+		return usuarios;
+	}
+	
 	public void save(Usuario usuario) {
 		
 		usuario.setToken(new TokenUtil().getNewToken());
