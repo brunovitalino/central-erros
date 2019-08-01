@@ -7,7 +7,7 @@ import com.thoughtworks.xstream.security.NoTypePermission;
 import com.thoughtworks.xstream.security.NullPermission;
 import com.thoughtworks.xstream.security.PrimitiveTypePermission;
 
-public class Convert {
+public class ConvertUtil {
 
 	private static XStream xStream;
 

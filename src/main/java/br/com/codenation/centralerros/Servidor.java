@@ -9,6 +9,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 public class Servidor {
 	
+	private static final String ENDERECO = "http://localhost:8080";
+	private static final String PACOTE_DOS_SERVICOS = "br.com.codenation.centralerros.resource";
 	private static HttpServer server;
 
 	public static void main(String[] args) throws IOException {
@@ -18,15 +20,13 @@ public class Servidor {
 		finalizaServidor();
 		System.out.println("Servidor parado.");
 	}
-
-	private static void getInstance() {
-		URI serverUri = URI.create("http://localhost:8080");
-		ResourceConfig config = new ResourceConfig().packages("br.com.codenation.centralerros.resource");
-		server = GrizzlyHttpServerFactory.createHttpServer(serverUri, config);
-	}
 	
 	public static void inicializaServidor() {
-		if (server == null)	getInstance();
+		if (server == null) {
+			URI serverUri = URI.create(ENDERECO);
+			ResourceConfig config = new ResourceConfig().packages(PACOTE_DOS_SERVICOS);
+			server = GrizzlyHttpServerFactory.createHttpServer(serverUri, config);
+		}
 	}
 
 	@SuppressWarnings("deprecation")

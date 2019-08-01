@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import br.com.codenation.centralerros.model.Usuario;
+import br.com.codenation.centralerros.utils.JPAUtil;
 
 public class UsuarioDAO {
 	
@@ -20,13 +19,26 @@ public class UsuarioDAO {
 		Usuario usuario1 = new Usuario("abc3de", "Bruno Vitalino", "bv@hot.com", "123456");
 		usuario1.setId(1l);
 		banco.put(1l, usuario1);
-//		Usuario usuario2 = new Usuario("def5gh", "Breno Oliveira", "bo@hot.com", "654321");
-//		usuario2.setId(1l);
-//		banco.put(2l, usuario2);
+		Usuario usuario2 = new Usuario("def5gh", "Breno Oliveira", "bo@hot.com", "654321");
+		usuario2.setId(1l);
+		banco.put(2l, usuario2);
 	}
 
-	public Usuario busca(long id) {
+	public Usuario buscaMemoria(long id) {
 		return banco.get(id);
+	}
+
+	public Usuario find(long id) {
+
+		EntityManager em = new JPAUtil().getEntityManager();
+		
+		em.getTransaction().begin();
+		Usuario usuario = em.find(Usuario.class, id);
+		em.getTransaction().commit();
+		
+		em.close();
+		
+		return usuario;
 	}
 	
 	public void adiciona(Usuario usuario) {
@@ -35,7 +47,7 @@ public class UsuarioDAO {
 		banco.put(id, usuario);
 	}
 	
-	public Usuario adiciona() {
+	public Usuario popula() {
 		Usuario usuario = new Usuario();
 		usuario.setToken("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma");
 		usuario.setNome("Administrador");
@@ -43,15 +55,13 @@ public class UsuarioDAO {
 		usuario.setPassword("123456");
 		usuario.setDataCadastro( new Timestamp(System.currentTimeMillis()) );
 		
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("db_mySql_server");
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = new JPAUtil().getEntityManager();
 		
 		em.getTransaction().begin();
 		em.persist(usuario);
 		em.getTransaction().commit();
-		em.close();
 		
-		emf.close();
+		em.close();
 		
 		return usuario;
 	}
