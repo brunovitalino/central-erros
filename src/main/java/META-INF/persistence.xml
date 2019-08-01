@@ -15,6 +15,7 @@
 		<properties>
 			<!-- dados da conexao jdbc -->
 			<property name="javax.persistence.jdbc.driver"		value="com.mysql.jdbc.Driver"/>
+<!-- 			<property name="javax.persistence.jdbc.url" 		value="jdbc:mysql://localhost/central_erros?useSSL=false"/> -->
 			<property name="javax.persistence.jdbc.url" 		value="jdbc:mysql://localhost/central_erros"/>
 			<property name="javax.persistence.jdbc.user"		value="root"/>
 			<property name="javax.persistence.jdbc.password"	value=""/>

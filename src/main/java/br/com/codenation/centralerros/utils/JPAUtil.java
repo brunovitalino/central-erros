@@ -9,10 +9,12 @@ public class JPAUtil {
 	private static EntityManagerFactory emf;
 
 	public EntityManager getEntityManager() {
-		if (emf == null)
-			emf = Persistence.createEntityManagerFactory("db_mySql_server");
-		
+		if (emf==null) emf = Persistence.createEntityManagerFactory("db_mySql_server");
 		return emf.createEntityManager();
 	}
+
+	/*public void closeEntityManager() {
+		if (emf!=null) emf.close();
+	}*/
 	
 }
