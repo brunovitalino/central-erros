@@ -2,10 +2,7 @@ package br.com.codenation.centralerros.dao;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -16,29 +13,7 @@ import br.com.codenation.centralerros.utils.TokenUtil;
 
 public class UsuarioDAO {
 	
-	private static Map<Long, Usuario> banco = new HashMap<>();
-	private static AtomicLong contador = new AtomicLong(1);
-	
-	static {
-		Usuario usuario1 = new Usuario("abc3de", "Bruno Vitalino", "bv@hot.com", "123456");
-		usuario1.setId(1l);
-		banco.put(1l, usuario1);
-		Usuario usuario2 = new Usuario("def5gh", "Breno Oliveira", "bo@hot.com", "654321");
-		usuario2.setId(1l);
-		banco.put(2l, usuario2);
-	}
-	
-	// TESTE
-
-	public Usuario buscaMemoria(long id) {
-		return banco.get(id);
-	}
-	
-	public void adiciona(Usuario usuario) {
-		long id = contador.incrementAndGet();
-		usuario.setId(id);
-		banco.put(id, usuario);
-	}
+	// DAOs PRINCIPAIS
 	
 	public Usuario popula() {
 		Usuario usuario = new Usuario();
@@ -46,27 +21,30 @@ public class UsuarioDAO {
 		usuario.setNome("Administrador");
 		usuario.setEmail("admin@admin.com");
 		usuario.setPassword("123456");
-		usuario.setDataCadastro( new Timestamp(System.currentTimeMillis()) );
+		Timestamp horaAtual = new Timestamp(System.currentTimeMillis());
+		usuario.setDataCadastro(horaAtual);
+		usuario.setDataAtualizacao(horaAtual);
 		
 		EntityManager em = new JPAUtil().getEntityManager();
 		em.getTransaction().begin();
+		
 		em.persist(usuario);
+		
 		em.getTransaction().commit();
 		em.close();
 //		new JPAUtil().closeEntityManager();
 		
 		return usuario;
 	}
-	
-	// PRODUCAO
 
 	public Usuario find(long id) {
+		
 		EntityManager em = new JPAUtil().getEntityManager();
 		em.getTransaction().begin();
 		
 		Usuario usuario = em.find(Usuario.class, id);
-		em.getTransaction().commit();
 		
+		em.getTransaction().commit();
 		em.close();
 //		new JPAUtil().closeEntityManager();
 		
@@ -74,21 +52,44 @@ public class UsuarioDAO {
 	}
 
 	public void save(Usuario usuario) {
-		List<String> tokens = allTokens();
-		usuario.setToken(new TokenUtil().getNewToken(tokens));
-		usuario.setDataCadastro(new Timestamp(System.currentTimeMillis()));
+		
+		usuario.setToken(new TokenUtil().getNewToken());
+		Timestamp horaAtual = new Timestamp(System.currentTimeMillis());
+		usuario.setDataCadastro(horaAtual);
+		usuario.setDataAtualizacao(horaAtual);
 		
 		EntityManager em = new JPAUtil().getEntityManager();
 		em.getTransaction().begin();
 		
 		em.persist(usuario);
-		em.getTransaction().commit();
 		
+		em.getTransaction().commit();
 		em.close();
 //		new JPAUtil().closeEntityManager();
 	}
+
+	public void update(Usuario usuarioAtualizado) {
+		
+		EntityManager em = new JPAUtil().getEntityManager();
+		em.getTransaction().begin();
+		
+		Usuario usuario = new Usuario();
+		usuario = em.find(Usuario.class, usuarioAtualizado.getId());
+		usuario.setNome( usuarioAtualizado.getNome() );
+		usuario.setEmail( usuarioAtualizado.getEmail() );
+		usuario.setPassword( usuarioAtualizado.getPassword() );
+		usuario.setDataAtualizacao( new Timestamp(System.currentTimeMillis()) );
+		
+		em.getTransaction().commit();
+		em.close();
+	}
 	
+	
+	// DAOs AUXILIARES
+	
+	@SuppressWarnings("unchecked")
 	public List<String> allTokens() {
+		
 		List<String> tokens = new ArrayList<>();
 		
 		EntityManager em = new JPAUtil().getEntityManager();
@@ -99,8 +100,8 @@ public class UsuarioDAO {
 		Query query = em.createQuery(jpql);
 		List<Usuario> usuarios = query.getResultList();
 		usuarios.stream().forEach(e->tokens.add(e.getToken()));
-		em.getTransaction().commit();
 		
+		em.getTransaction().commit();
 		em.close();
 //		new JPAUtil().closeEntityManager();
 		

@@ -18,17 +18,10 @@ public class Usuario {
 	private String email;
 	private String password;
 	private Timestamp dataCadastro;
+	private Timestamp dataAtualizacao;
 	
 	public Usuario() {}
-	
-	public Usuario(String token, String nome, String email, String password) {
-		this.token = token;
-		this.nome = nome;
-		this.email = email;
-		this.password = password;
-		this.dataCadastro = new Timestamp(System.currentTimeMillis());
-	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -64,5 +57,11 @@ public class Usuario {
 	}
 	public void setDataCadastro(Timestamp dataCadastro) {
 		this.dataCadastro = dataCadastro;
+	}
+	public Timestamp getDataAtualizacao() {
+		return dataAtualizacao;
+	}
+	public void setDataAtualizacao(Timestamp dataAtualizacao) {
+		this.dataAtualizacao = dataAtualizacao;
 	}
 }

@@ -3,9 +3,12 @@ package br.com.codenation.centralerros.utils;
 import java.util.List;
 import java.util.Random;
 
+import br.com.codenation.centralerros.dao.UsuarioDAO;
+
 public class TokenUtil {
 	
-	public String getNewToken(List<String> tokens) {
+	public String getNewToken() {
+		List<String> tokens = new UsuarioDAO().allTokens();
 		String token;
 		if (tokens.isEmpty()) token = gerarNewToken();
 		else do token = gerarNewToken(); while(tokens.contains(token)); //se repetido, gere outro token
