@@ -7,12 +7,13 @@ import javax.ws.rs.client.Invocation.Builder;
 
 public class BaseTests {
 
-	private static final String CLIENT_URI = "http://localhost:8080";
-
-	protected static Builder getRequest(String acao) {
-		Client client = ClientBuilder.newClient();
+	private final String CLIENT_URI = "http://localhost:8080";
+	protected static Client client;
+	
+	protected Builder getRequest(String resourceAction) {
+		if (client==null) client = ClientBuilder.newClient();
 		WebTarget target = client.target(CLIENT_URI);
-		Builder request = target.path(acao).request();
+		Builder request = target.path(resourceAction).request();
 		return request;
 	}
 

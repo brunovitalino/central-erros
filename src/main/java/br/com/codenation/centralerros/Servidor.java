@@ -27,10 +27,12 @@ public class Servidor {
 			ResourceConfig config = new ResourceConfig().packages(PACOTE_DOS_SERVICOS);
 			server = GrizzlyHttpServerFactory.createHttpServer(serverUri, config);
 		}
+		System.out.println("seeeeeeeeeever iniciou");
 	}
 
 	@SuppressWarnings("deprecation")
 	public static void finalizaServidor() {
 		if (server != null)	server.stop();
+		System.out.println("seeeeeeeeeever encerrou");
 	}
 }
