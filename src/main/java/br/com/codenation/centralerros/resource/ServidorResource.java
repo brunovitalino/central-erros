@@ -16,7 +16,7 @@ public class ServidorResource {
 		return "ok";
 	}
 	
-	// Popula o banco de dados
+	// Popula o banco de dados com todas entidades necessarias
 	@Path("dbfill")
 	@GET
 	@Produces(MediaType.APPLICATION_XML)

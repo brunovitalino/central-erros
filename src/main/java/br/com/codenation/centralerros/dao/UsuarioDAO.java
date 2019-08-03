@@ -80,7 +80,7 @@ public class UsuarioDAO {
 		em.close();
 	}
 
-	public void remove(Long id) {
+	public Usuario remove(Long id) {
 		
 		EntityManager em = new JPAUtil().getEntityManager();
 		em.getTransaction().begin();
@@ -90,6 +90,8 @@ public class UsuarioDAO {
 		
 		em.getTransaction().commit();
 		em.close();
+		
+		return usuario;
 	}
 	
 	
