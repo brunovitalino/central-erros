@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -22,6 +23,12 @@ public class UsuarioTest extends BaseTests {
 		String conteudo = getRequest("/usuarios/1").get(String.class);
 		Usuario usuario = (Usuario) ConvertUtil.fromXMLtoObject(conteudo);
 		Assert.assertEquals("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma", usuario.getToken());
+	}
+	
+	@Test
+	public void testaQueBuscarUmUsuarioRetornaUmaListaDeUsuarios() {
+		String conteudo = getRequest("/usuarios").get(String.class);
+		Assert.assertTrue(ConvertUtil.fromXMLtoObject(conteudo) instanceof List);
 	}
 	
 	@Test
