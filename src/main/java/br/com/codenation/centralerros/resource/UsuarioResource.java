@@ -21,22 +21,22 @@ import br.com.codenation.centralerros.utils.ConvertUtil;
 @Path("usuarios")
 public class UsuarioResource {
 
-	// Busca usuario pelo id
-	@Path("{id}")
-	@GET
-	@Produces(MediaType.APPLICATION_XML)
-	public Response find(@PathParam("id") Long id) {
-		Usuario usuario = new UsuarioDAO().find(id);
-		String conteudo = ConvertUtil.fromObjectToXML(usuario);
-		return Response.ok(conteudo).build();
-	}
-
 	// Busca todos usuarios
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	public Response find() {
 		List<Usuario> usuarios = new UsuarioDAO().findAll();
 		String conteudo = ConvertUtil.fromObjectToXML(usuarios);
+		return Response.ok(conteudo).build();
+	}
+
+	// Busca usuario pelo id
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_XML)
+	public Response find(@PathParam("id") Long id) {
+		Usuario usuario = new UsuarioDAO().find(id);
+		String conteudo = ConvertUtil.fromObjectToXML(usuario);
 		return Response.ok(conteudo).build();
 	}
 
@@ -52,10 +52,12 @@ public class UsuarioResource {
 
 	// Atualiza usuario
 	@PUT
+	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response update(String conteudo) {
+	public Response update(String conteudo, @PathParam("id") Long id) {
+		System.out.println("id: " + id);
 		Usuario usuario = (Usuario) ConvertUtil.fromXMLtoObject(conteudo);
-		new UsuarioDAO().update(usuario);
+		new UsuarioDAO().update(id, usuario);
 		return Response.noContent().build();
 	}
 

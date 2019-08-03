@@ -64,13 +64,13 @@ public class UsuarioDAO {
 //		new JPAUtil().closeEntityManager();
 	}
 
-	public void update(Usuario usuarioAtualizado) {
+	public void update(Long idUsuarioAntigo, Usuario usuarioAtualizado) {
 		
 		EntityManager em = new JPAUtil().getEntityManager();
 		em.getTransaction().begin();
 		
 		Usuario usuario = new Usuario();
-		usuario = em.find(Usuario.class, usuarioAtualizado.getId());
+		usuario = em.find(Usuario.class, idUsuarioAntigo);
 		usuario.setNome( usuarioAtualizado.getNome() );
 		usuario.setEmail( usuarioAtualizado.getEmail() );
 		usuario.setPassword( usuarioAtualizado.getPassword() );
