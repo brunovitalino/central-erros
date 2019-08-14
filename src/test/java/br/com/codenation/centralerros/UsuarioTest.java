@@ -10,13 +10,33 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import br.com.codenation.centralerros.model.Usuario;
 import br.com.codenation.centralerros.utils.ConvertUtil;
 
 public class UsuarioTest extends BaseTests {
+	
+	private Usuario usuario;
+
+	@BeforeClass
+	public static void init() {
+		Servidor.inicializaServidor();
+	}
+
+	@AfterClass
+	public static void finish() {
+		Servidor.finalizaServidor();
+	}
+	
+	@Before
+	public void setup() {
+		usuario = new Usuario("TokenTeste", "Teste", "teste@teste.com", "123456");
+	}
 	
 	@Test
 	public void testaQueBuscarUmUsuarioRetornaOUsuarioEsperado() {
@@ -33,19 +53,29 @@ public class UsuarioTest extends BaseTests {
 	
 	@Test
 	public void testaSalvarNovoUsuario() {
-		Usuario usuario = new Usuario();
-		usuario.setNome("Teste");
-		usuario.setEmail("teste@teste.com");
-		usuario.setPassword("123456");
-		String conteudoTeste1 = ConvertUtil.fromObjectToXML(usuario);
+		usuario.setToken("TokenTesteSalvar");
+		String usuarioXML = ConvertUtil.fromObjectToXML(usuario);
 		
-		Entity<String> entity = Entity.entity(conteudoTeste1, MediaType.APPLICATION_XML);
+		Entity<String> entity = Entity.entity(usuarioXML, MediaType.APPLICATION_XML);
 		Response response = getRequest("/usuarios").post(entity, Response.class);
 		assertEquals(201, response.getStatus());
 		
 		URI location = response.getLocation();
-		String conteudoTeste2 = getRequest(location.getPath()).get(String.class);
-		assertTrue(conteudoTeste2.contains("teste@teste.com"));
+		String usuarioXMLSalvo = getRequest(location.getPath()).get(String.class);
+		assertTrue(usuarioXMLSalvo.contains("teste@teste.com"));
 	}
-
+	
+	@Test
+	public void testaRemoverUsuario() {
+		usuario.setToken("TokenTesteRemover");
+		String usuarioXML = ConvertUtil.fromObjectToXML(usuario);
+		
+		Entity<String> entity = Entity.entity(usuarioXML, MediaType.APPLICATION_XML);
+		Response response = getRequest("/usuarios").post(entity, Response.class);
+		assertEquals(201, response.getStatus());
+		
+		URI location = response.getLocation();
+		response = getRequest( location.getPath() ).delete();
+		assertEquals(204, response.getStatus());
+	}
 }

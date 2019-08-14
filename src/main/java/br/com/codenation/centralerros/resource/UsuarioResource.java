@@ -24,7 +24,7 @@ public class UsuarioResource {
 	// Busca todos usuarios
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	public Response find() {
+	public Response findAll() {
 		List<Usuario> usuarios = new UsuarioDAO().findAll();
 		String conteudo = ConvertUtil.fromObjectToXML(usuarios);
 		return Response.ok(conteudo).build();
@@ -33,10 +33,13 @@ public class UsuarioResource {
 	// Busca usuario pelo id
 	@GET
 	@Path("{id}")
-	@Produces(MediaType.APPLICATION_XML)
-	public Response find(@PathParam("id") Long id) {
-		Usuario usuario = new UsuarioDAO().find(id);
+//	@Produces(value= {MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+//	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_XML)
+	public Response findOne(@PathParam("id") Long id) {
+		Usuario usuario = new UsuarioDAO().findOne(id);
 		String conteudo = ConvertUtil.fromObjectToXML(usuario);
+//		String conteudo = ConvertUtil.fromObjectToJson(usuario);
 		return Response.ok(conteudo).build();
 	}
 
@@ -46,7 +49,7 @@ public class UsuarioResource {
 	public Response save(String conteudo) {
 		Usuario usuario = (Usuario) ConvertUtil.fromXMLtoObject(conteudo);
 		new UsuarioDAO().save(usuario);
-		URI uri = URI.create("/usuario/" + usuario.getId());
+		URI uri = URI.create("/usuarios/" + usuario.getId());
 		return Response.created(uri).build();
 	}
 
@@ -55,7 +58,6 @@ public class UsuarioResource {
 	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_XML)
 	public Response update(String conteudo, @PathParam("id") Long id) {
-		System.out.println("id: " + id);
 		Usuario usuario = (Usuario) ConvertUtil.fromXMLtoObject(conteudo);
 		new UsuarioDAO().update(id, usuario);
 		return Response.noContent().build();
@@ -65,8 +67,8 @@ public class UsuarioResource {
 	@Path("{id}")
 	@DELETE
 	@Produces(MediaType.APPLICATION_XML)
-	public Response remove(@PathParam("id") Long id) {
-		new UsuarioDAO().remove(id);
+	public Response delete(@PathParam("id") Long id) {
+		new UsuarioDAO().delete(id);
 		return Response.noContent().build();
 	}
 }

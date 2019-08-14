@@ -20,7 +20,17 @@ public class Usuario {
 	private Timestamp dataCadastro;
 	private Timestamp dataAtualizacao;
 	
-	public Usuario() {}
+	public Usuario() {
+		this.dataCadastro = this.dataAtualizacao = new Timestamp(System.currentTimeMillis());
+	}
+	
+	public Usuario(String token, String nome, String email, String password) {
+		this.token = token;
+		this.nome = nome;
+		this.email = email;
+		this.password = password;
+		this.dataCadastro = this.dataAtualizacao = new Timestamp(System.currentTimeMillis());
+	}
 
 	public Long getId() {
 		return id;

@@ -13,19 +13,23 @@ import br.com.codenation.centralerros.utils.TokenUtil;
 
 public class UsuarioDAO {
 
+	private EntityManager getEntityManagerInstance() {
+		return new JPAUtil().getEntityManager();
+	}
+
 	
 	// DAOs PRINCIPAIS
 
-	public Usuario find(long id) {
+	public Usuario findOne(long id) {
 		
-		EntityManager em = new JPAUtil().getEntityManager();
+		EntityManager em = getEntityManagerInstance();
 		em.getTransaction().begin();
 		
 		Usuario usuario = em.find(Usuario.class, id);
 		
 		em.getTransaction().commit();
 		em.close();
-//		new JPAUtil().closeEntityManager();
+//		JPAUtil.closeEntityManager();
 		
 		return usuario;
 	}
@@ -33,7 +37,7 @@ public class UsuarioDAO {
 	@SuppressWarnings("unchecked")
 	public List<Usuario> findAll() {
 		
-		EntityManager em = new JPAUtil().getEntityManager();
+		EntityManager em = getEntityManagerInstance();
 		em.getTransaction().begin();
 		
 		String jpql = "Select u from Usuario u";
@@ -49,28 +53,30 @@ public class UsuarioDAO {
 	
 	public void save(Usuario usuario) {
 		
-		if (usuario.getToken()==null) usuario.setToken(new TokenUtil().getNewToken());
+		if (usuario.getToken() == null) usuario.setToken(new TokenUtil().getNewToken());
+		
 		Timestamp horaAtual = new Timestamp(System.currentTimeMillis());
 		usuario.setDataCadastro(horaAtual);
 		usuario.setDataAtualizacao(horaAtual);
 		
-		EntityManager em = new JPAUtil().getEntityManager();
+		EntityManager em = getEntityManagerInstance();
 		em.getTransaction().begin();
 		
 		em.persist(usuario);
 		
 		em.getTransaction().commit();
 		em.close();
-//		new JPAUtil().closeEntityManager();
+//		JPAUtil.closeEntityManager();
 	}
 
 	public void update(Long idUsuarioAntigo, Usuario usuarioAtualizado) {
 		
-		EntityManager em = new JPAUtil().getEntityManager();
+		EntityManager em = getEntityManagerInstance();
 		em.getTransaction().begin();
 		
 		Usuario usuario = new Usuario();
 		usuario = em.find(Usuario.class, idUsuarioAntigo);
+		
 		usuario.setNome( usuarioAtualizado.getNome() );
 		usuario.setEmail( usuarioAtualizado.getEmail() );
 		usuario.setPassword( usuarioAtualizado.getPassword() );
@@ -79,10 +85,10 @@ public class UsuarioDAO {
 		em.getTransaction().commit();
 		em.close();
 	}
-
-	public Usuario remove(Long id) {
 		
-		EntityManager em = new JPAUtil().getEntityManager();
+	public Usuario delete(Long id) {
+		
+		EntityManager em = getEntityManagerInstance();
 		em.getTransaction().begin();
 		
 		Usuario usuario = em.find(Usuario.class, id);
@@ -100,20 +106,19 @@ public class UsuarioDAO {
 	@SuppressWarnings("unchecked")
 	public List<String> allTokens() {
 		
-		List<String> tokens = new ArrayList<>();
-		
-		EntityManager em = new JPAUtil().getEntityManager();
+		EntityManager em = getEntityManagerInstance();
 		em.getTransaction().begin();
 		
 		String jpql = "Select u from Usuario u";
 		
 		Query query = em.createQuery(jpql);
 		List<Usuario> usuarios = query.getResultList();
+		List<String> tokens = new ArrayList<>();
 		usuarios.stream().forEach(e->tokens.add(e.getToken()));
 		
 		em.getTransaction().commit();
 		em.close();
-//		new JPAUtil().closeEntityManager();
+//		JPAUtil.closeEntityManager();
 		
 		return tokens;
 	}
