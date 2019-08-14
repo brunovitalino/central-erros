@@ -53,7 +53,7 @@ public class UsuarioTest extends BaseTests {
 	
 	@Test
 	public void testaSalvarNovoUsuario() {
-		usuario.setToken("TokenTesteSalvar");
+		usuario.setNome("Teste Salvar");
 		String usuarioXML = ConvertUtil.fromObjectToXML(usuario);
 		
 		Entity<String> entity = Entity.entity(usuarioXML, MediaType.APPLICATION_XML);
@@ -62,7 +62,35 @@ public class UsuarioTest extends BaseTests {
 		
 		URI location = response.getLocation();
 		String usuarioXMLSalvo = getRequest(location.getPath()).get(String.class);
-		assertTrue(usuarioXMLSalvo.contains("teste@teste.com"));
+		assertTrue(usuarioXMLSalvo.contains("Teste Salvar"));
+	}
+	
+	@Test
+	public void testaAtualizarUsuario() {
+		usuario.setNome("Teste Atualizar");
+		
+		String usuarioXML = ConvertUtil.fromObjectToXML(usuario);
+		Entity<String> entity = Entity.entity(usuarioXML, MediaType.APPLICATION_XML);
+		
+		Response response = getRequest("/usuarios").post(entity, Response.class);
+		assertEquals(201, response.getStatus());
+		
+		URI location = response.getLocation();
+		String usuarioXMLSalvo = getRequest( location.getPath() ).get(String.class);
+		assertTrue(usuarioXMLSalvo.contains("Teste Atualizar"));
+		
+		
+		usuario = (Usuario) ConvertUtil.fromXMLtoObject(usuarioXMLSalvo);
+		usuario.setNome("Teste Atualizado");
+		
+		String usuarioXMLAtualizar = ConvertUtil.fromObjectToXML(usuario);
+		entity = Entity.entity(usuarioXMLAtualizar, MediaType.APPLICATION_XML);
+		
+		Response responseAtualizada = getRequest( location.getPath() ).put(entity, Response.class);
+		assertEquals(204, responseAtualizada.getStatus());
+		
+		String usuarioXMLAtualizado = getRequest( location.getPath() ).get(String.class);
+		assertTrue(usuarioXMLAtualizado.contains("Teste Atualizado"));
 	}
 	
 	@Test
