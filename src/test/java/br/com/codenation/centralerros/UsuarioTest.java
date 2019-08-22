@@ -3,12 +3,17 @@ package br.com.codenation.centralerros;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -17,6 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import br.com.codenation.centralerros.model.Usuario;
+import br.com.codenation.centralerros.model.utils.UsuariosWrapper;
 import br.com.codenation.centralerros.utils.ConvertUtil;
 
 public class UsuarioTest extends BaseTests {
@@ -35,75 +41,120 @@ public class UsuarioTest extends BaseTests {
 	
 	@Before
 	public void setup() {
-		usuario = new Usuario("TokenTeste", "Teste", "teste@teste.com", "123456");
-	}
-	
-	@Test
-	public void testaQueBuscarUmUsuarioRetornaOUsuarioEsperado() {
-		String conteudo = getRequest("/usuarios/1").get(String.class);
-		Usuario usuario = (Usuario) ConvertUtil.fromXMLtoObject(conteudo);
-		Assert.assertEquals("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma", usuario.getToken());
+		usuario = new Usuario("TestToken", "TestName", "teste@teste.com", "123456");
 	}
 	
 	@Test
 	public void testaQueBuscarUmUsuarioRetornaUmaListaDeUsuarios() {
-		String conteudo = getRequest("/usuarios").get(String.class);
-		Assert.assertTrue(ConvertUtil.fromXMLtoObject(conteudo) instanceof List);
+//		UsuariosWrapper usuariosWrapper = doRequest("/usuarios").get(UsuariosWrapper.class);
+		//Usuario[] usuariosArray = doRequest("/usuarios").accept(MediaType.APPLICATION_XML).get(Usuario[].class);
+		
+		// TESTA XML
+		String content = doRequest("/usuarios").accept(MediaType.APPLICATION_XML).get(String.class);
+		UsuariosWrapper usuariosWrapper = ConvertUtil.toObject(content, UsuariosWrapper.class);
+		List<Usuario> usuarios = usuariosWrapper.getUsuarios();
+		Assert.assertTrue(usuarios.get(0).getToken().equals("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma"));
+
+		// TESTA JSON
+		content = doRequest("/usuarios").accept(MediaType.APPLICATION_JSON).get(String.class);
+		Usuario[] usuariosArray = ConvertUtil.toObject(content, Usuario[].class);
+		usuarios = Arrays.asList(usuariosArray);
+		Assert.assertTrue(usuarios.get(0).getToken().equals("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma"));
+	}
+	
+	@Test
+	public void testaQueBuscarUmUsuarioRetornaOUsuarioEsperado() {
+		// TESTA XML
+		//Usuario usuario = doRequest("/usuarios/1").accept(MediaType.APPLICATION_XML).get(Usuario.class);
+		String content = doRequest("/usuarios/1").accept(MediaType.APPLICATION_XML).get(String.class);
+		Usuario usuario = ConvertUtil.toObject(content, Usuario.class);
+		Assert.assertEquals("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma", usuario.getToken());
+		
+		// TESTA JSON
+		content = doRequest("/usuarios/1").accept(MediaType.APPLICATION_JSON).get(String.class);
+		usuario = (Usuario) ConvertUtil.toObject(content, Usuario.class);
+		Assert.assertEquals("KUsx9iJWOAo9tmuYU1LErzUdS8XM46vPmS5cCWma", usuario.getToken());
 	}
 	
 	@Test
 	public void testaSalvarNovoUsuario() {
-		usuario.setNome("Teste Salvar");
-		String usuarioXML = ConvertUtil.fromObjectToXML(usuario);
+		// TESTA XML
+		usuario.setNome("Teste Salvar XML");
+		String usuarioXML = ConvertUtil.toXML(usuario);
 		
 		Entity<String> entity = Entity.entity(usuarioXML, MediaType.APPLICATION_XML);
-		Response response = getRequest("/usuarios").post(entity, Response.class);
+		Response response = doRequest("/usuarios").post(entity, Response.class);
 		assertEquals(201, response.getStatus());
 		
 		URI location = response.getLocation();
-		String usuarioXMLSalvo = getRequest(location.getPath()).get(String.class);
-		assertTrue(usuarioXMLSalvo.contains("Teste Salvar"));
+		
+		String usuarioXMLSalvo = doRequest(location.getPath()).get(String.class);
+		assertTrue(usuarioXMLSalvo.contains("Teste Salvar XML"));
+		
+		// TESTA JSON
+		usuario.setNome("Teste Salvar JSON");
+		String usuarioJSON = ConvertUtil.toJson(usuario);
+		
+		entity = Entity.entity(usuarioJSON, MediaType.APPLICATION_JSON);
+		response = doRequest("/usuarios").post(entity, Response.class);
+		assertEquals(201, response.getStatus());
+		
+		location = response.getLocation();
+		
+		String usuarioJSONSalvo = doRequest(location.getPath()).get(String.class);
+		assertTrue(usuarioJSONSalvo.contains("Teste Salvar JSON"));
 	}
 	
 	@Test
 	public void testaAtualizarUsuario() {
-		usuario.setNome("Teste Atualizar");
+		Usuario usuario = this.usuario;
+		usuario.setNome("Teste Desatualizado");
+		String usuarioOld = ConvertUtil.toXML(usuario);
 		
-		String usuarioXML = ConvertUtil.fromObjectToXML(usuario);
-		Entity<String> entity = Entity.entity(usuarioXML, MediaType.APPLICATION_XML);
+		Entity<String> entity = Entity.entity(usuarioOld, MediaType.APPLICATION_XML);
+		Response response = doRequest("/usuarios").post(entity, Response.class);
 		
-		Response response = getRequest("/usuarios").post(entity, Response.class);
 		assertEquals(201, response.getStatus());
+		assertTrue(usuarioOld.contains("Teste Desatualizado"));
 		
 		URI location = response.getLocation();
-		String usuarioXMLSalvo = getRequest( location.getPath() ).get(String.class);
-		assertTrue(usuarioXMLSalvo.contains("Teste Atualizar"));
 		
+		// TESTA XML
+		String usuarioXML = doRequest( location.getPath() ).accept(MediaType.APPLICATION_XML).get(String.class);
+		usuario = ConvertUtil.toObject(usuarioXML, Usuario.class);
+		usuario.setNome("Teste Atualizado XML");
 		
-		usuario = (Usuario) ConvertUtil.fromXMLtoObject(usuarioXMLSalvo);
-		usuario.setNome("Teste Atualizado");
+		entity = Entity.entity( ConvertUtil.toXML(usuario) , MediaType.APPLICATION_XML );
+		response = doRequest( location.getPath() ).put(entity, Response.class);
 		
-		String usuarioXMLAtualizar = ConvertUtil.fromObjectToXML(usuario);
-		entity = Entity.entity(usuarioXMLAtualizar, MediaType.APPLICATION_XML);
+		assertEquals(204, response.getStatus());
+		String usuarioXMLAtualizado = doRequest( location.getPath() ).get(String.class);
+		assertTrue(usuarioXMLAtualizado.contains("Teste Atualizado XML"));
 		
-		Response responseAtualizada = getRequest( location.getPath() ).put(entity, Response.class);
-		assertEquals(204, responseAtualizada.getStatus());
+		// TESTA JSON
+		String usuarioJSON = doRequest( location.getPath() ).accept(MediaType.APPLICATION_JSON).get(String.class);
+		usuario = ConvertUtil.toObject(usuarioJSON, Usuario.class);
+		usuario.setNome("Teste Atualizado JSON");
 		
-		String usuarioXMLAtualizado = getRequest( location.getPath() ).get(String.class);
-		assertTrue(usuarioXMLAtualizado.contains("Teste Atualizado"));
+		entity = Entity.entity( ConvertUtil.toJson(usuario) , MediaType.APPLICATION_JSON );
+		response = doRequest( location.getPath() ).put(entity, Response.class);
+		
+		assertEquals(204, response.getStatus());
+		String usuarioJSONAtualizado = doRequest( location.getPath() ).get(String.class);
+		assertTrue(usuarioJSONAtualizado.contains("Teste Atualizado JSON"));
 	}
 	
 	@Test
 	public void testaRemoverUsuario() {
-		usuario.setToken("TokenTesteRemover");
-		String usuarioXML = ConvertUtil.fromObjectToXML(usuario);
+		String usuario = ConvertUtil.toXML(this.usuario);
 		
-		Entity<String> entity = Entity.entity(usuarioXML, MediaType.APPLICATION_XML);
-		Response response = getRequest("/usuarios").post(entity, Response.class);
+		Entity<String> entity = Entity.entity(usuario, MediaType.APPLICATION_XML);
+		Response response = doRequest("/usuarios").post(entity, Response.class);
 		assertEquals(201, response.getStatus());
 		
 		URI location = response.getLocation();
-		response = getRequest( location.getPath() ).delete();
+		
+		response = doRequest( location.getPath() ).delete();
 		assertEquals(204, response.getStatus());
 	}
 }

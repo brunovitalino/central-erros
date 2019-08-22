@@ -7,7 +7,7 @@ public class ServidorTest extends BaseTests {
 	
 	@Test
 	public void testaQueAConexaoComOServidorFunciona() {
-		String conteudo = getRequest("/status").get(String.class);
+		String conteudo = doRequest("/status").get(String.class);
 		Assert.assertEquals("ok", conteudo);
 	}
 

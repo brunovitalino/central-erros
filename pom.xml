@@ -23,18 +23,25 @@
 	    <version>4.12</version>
 	    <scope>test</scope>
 	</dependency>
-   	<!-- HABILITA AS SERVLETS -->
+   	<!-- ENABLE SERVLETS -->
 	<dependency>
 	    <groupId>javax.servlet</groupId>
 	    <artifactId>javax.servlet-api</artifactId>
 	    <version>4.0.1</version>
 	    <scope>provided</scope>
 	</dependency>
-	<!-- HABILITA AS WS ANNOTATIONS -->
+	<!-- ENABLE WS ANNOTATIONS -->
+<!-- 	<dependency> -->
+<!-- 	    <groupId>org.glassfish.jersey.core</groupId> -->
+<!-- 	    <artifactId>jersey-client</artifactId> -->
+<!-- 	    <version>${jersey.version}</version> -->
+<!-- 	</dependency> -->
+	<!-- ENABLE WS MEDIAS (json, etc) -->
 	<dependency>
-	    <groupId>org.glassfish.jersey.core</groupId>
-	    <artifactId>jersey-client</artifactId>
-	    <version>${jersey.version}</version>
+		<groupId>org.glassfish.jersey.media</groupId>
+		<artifactId>jersey-media-json-jackson</artifactId>
+		<version>${jersey.version}</version>
+		<scope>runtime</scope>
 	</dependency>
 	<!-- CONVERTER - XML -->
 	<dependency>
